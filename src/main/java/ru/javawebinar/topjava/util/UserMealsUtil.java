@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class UserMealsUtil {
     public static void main(String[] args) {
@@ -30,25 +29,15 @@ public class UserMealsUtil {
 
     public static List<UserMealWithExcess> filteredByCycles(List<UserMeal> meals, LocalTime startTime, LocalTime endTime, int caloriesPerDay) {
         //collect map with day-calories
-        Map<LocalDate, Integer> dayCalsMap = new HashMap<LocalDate, Integer>();
+        Map<LocalDate, Integer> dayCalsMap = new HashMap<>();
         for (UserMeal meal : meals) {
-            Integer cals = dayCalsMap.get(LocalDate.from(meal.getDateTime()));
-            if (cals != null) {
-                dayCalsMap.put(LocalDate.from(meal.getDateTime()), cals + meal.getCalories());
-            } else {
-                dayCalsMap.put(LocalDate.from(meal.getDateTime()), meal.getCalories());
-            }
+            dayCalsMap.put(LocalDate.from(meal.getDateTime()), meal.getCalories() + dayCalsMap.getOrDefault(LocalDate.from(meal.getDateTime()), 0));
         }
 
-        List<UserMealWithExcess> listWithExcess = new ArrayList<UserMealWithExcess>();
+        List<UserMealWithExcess> listWithExcess = new ArrayList<>();
         for (UserMeal meal : meals) {
             if (TimeUtil.isBetweenHalfOpen(LocalTime.from(meal.getDateTime()), startTime, endTime)) {
-                Integer dayCals = dayCalsMap.get(LocalDate.from(meal.getDateTime()));
-                boolean excess = false;
-                if (dayCals > caloriesPerDay) {
-                    excess = true;
-                }
-                listWithExcess.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess));
+                listWithExcess.add(new UserMealWithExcess(meal.getDateTime(), meal.getDescription(), meal.getCalories(), (dayCalsMap.get(LocalDate.from(meal.getDateTime())) > caloriesPerDay)));
             }
         }
         return listWithExcess;
