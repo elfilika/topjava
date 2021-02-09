@@ -16,20 +16,18 @@
             <th>dateTime</th>
             <th>description</th>
             <th>calories</th>
-            <th>exceed</th>
         </tr>
         </thead>
         <tbody>
-        <jsp:useBean id="MealList" scope="request" type="java.util.List"/>
-        <c:forEach items="${MealList}" var="meal">
-            <tr style="background-color:${meal.isExcess() ? 'greenyellow' : 'red'}">
+        <jsp:useBean id="mealToList" scope="request" type="java.util.List"/>
+        <c:forEach items="${mealToList}" var="meal">
+            <tr style="color:${meal.excess ? 'red' : 'green'}">
                 <td>
-                    <fmt:parseDate value="${ meal.getDateTime() }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
-                    <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${parsedDateTime}"/>
+                    <fmt:parseDate value="${ meal.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both"/>
+                    <fmt:formatDate pattern="yyyy-MM-dd HH:mm" value="${parsedDateTime}"/>
                 </td>
-                <td><c:out value="${meal.getDescription()}"/></td>
-                <td><c:out value="${meal.getCalories()}"/></td>
-                <td><c:out value="${meal.isExcess()}"/></td>
+                <td>${meal.description}</td>
+                <td>${meal.calories}</td>
             </tr>
         </c:forEach>
         </tbody>
