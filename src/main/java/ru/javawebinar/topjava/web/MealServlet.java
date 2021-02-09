@@ -10,14 +10,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.slf4j.LoggerFactory.getLogger;
+import static ru.javawebinar.topjava.util.MealsUtil.filteredByStreams;
 
 public class MealServlet extends HttpServlet {
+    private static final int MAX_CALORIES_BY_DAY = 2000;
     private static final Logger log = getLogger(MealServlet.class);
 
     private List<Meal> mealList = Arrays.asList(
@@ -29,9 +31,10 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        List<MealTo> mealToList = mealList.stream()
-                .map(meal -> new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), meal.getCalories() > 1000))
-                .collect(Collectors.toList());
+        List<MealTo> mealToList = filteredByStreams(mealList,
+                LocalTime.MIN,
+                LocalTime.MAX,
+                MAX_CALORIES_BY_DAY);
 
         log.debug("Setting attribute mealToList");
         request.setAttribute("mealToList", mealToList);
