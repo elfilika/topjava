@@ -5,11 +5,13 @@ import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 public class InMemoryMealRepository implements MealRepository {
@@ -46,7 +48,11 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Collection<Meal> getAll() {
-        return repository.values().stream().filter(meal -> meal.getUserId().equals(authUserId())).sorted((o1, o2) -> o2.compareTo(o1)).collect(Collectors.toList());
+        List<Meal> mealList = repository.values().stream().filter(meal -> meal.getUserId().equals(authUserId())).sorted((o1, o2) -> o2.compareTo(o1)).collect(Collectors.toList());
+        if (mealList == null) {
+            mealList = emptyList();
+        }
+        return mealList;
     }
 }
 
