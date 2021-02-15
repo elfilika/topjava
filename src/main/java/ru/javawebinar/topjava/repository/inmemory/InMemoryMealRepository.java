@@ -46,7 +46,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Collection<Meal> getAll() {
-        return repository.values().stream().filter(meal -> meal.getUserId().equals(authUserId())).collect(Collectors.toList());
+        return repository.values().stream().filter(meal -> meal.getUserId().equals(authUserId())).sorted((o1, o2) -> o2.compareTo(o1)).collect(Collectors.toList());
     }
 }
 
