@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.emptyList;
-import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFound;
 
 public class InMemoryMealRepository implements MealRepository {
     private final Map<Integer, Meal> repository = new ConcurrentHashMap<>();
@@ -39,16 +39,17 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal get(int id) {
-        if (repository.get(id).getUserId().equals(authUserId())) {
-            return repository.get(id);
+    public Meal get(int id, int userId) {
+        final Meal meal = repository.get(id);
+        if (meal != null && meal.getUserId().equals(userId)) {
+            return meal;
         }
         return null;
     }
 
     @Override
-    public Collection<Meal> getAll() {
-        List<Meal> mealList = repository.values().stream().filter(meal -> meal.getUserId().equals(authUserId())).sorted((o1, o2) -> o2.compareTo(o1)).collect(Collectors.toList());
+    public Collection<Meal> getAll(int userId) {
+        List<Meal> mealList = repository.values().stream().filter(meal -> meal.getUserId().equals(userId)).sorted((o1, o2) -> o2.getDateTime().compareTo(o1.getDateTime())).collect(Collectors.toList());
         if (mealList == null) {
             mealList = emptyList();
         }

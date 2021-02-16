@@ -7,6 +7,7 @@ import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,13 +48,15 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public List<User> getAll() {
         log.info("getAll");
-        return repository.values().stream().sorted((o1, o2) -> o2.compareTo(o1)).collect(Collectors.toList());
+        Comparator<User> comparator = Comparator.comparing(o1 -> o1.getName());
+        comparator = comparator.thenComparing(Comparator.comparing(o1 -> o1.getEmail()));
+        return repository.values().stream().sorted(comparator).collect(Collectors.toList());
     }
 
     @Override
     public User getByEmail(String email) {
         log.info("getByEmail {}", email);
-        return repository.entrySet().stream().filter(repEntry -> repEntry.getValue().getEmail().equals(email))
-                .findFirst().map(Map.Entry::getValue).orElse(null);
+        return repository.values().stream().filter(repEntry -> repEntry.getEmail().toLowerCase().equals(email.toLowerCase()))
+                .findFirst().orElse(null);
     }
 }

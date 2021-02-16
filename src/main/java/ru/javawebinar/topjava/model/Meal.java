@@ -58,8 +58,4 @@ public class Meal extends AbstractBaseEntity {
                 ", calories=" + calories +
                 '}';
     }
-
-    public int compareTo(Meal o1) {
-        return this.dateTime.compareTo(o1.getDateTime());
-    }
 }
